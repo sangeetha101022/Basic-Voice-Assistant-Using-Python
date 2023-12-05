@@ -1,0 +1,117 @@
+import speech_recognition as sr
+import pyttsx3
+import pywhatkit
+import datetime
+import wikipedia
+import pyjokes
+
+listener = sr.Recognizer()
+engine = pyttsx3.init()
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[1].id)
+
+
+def talk(text):
+    engine.say(text)
+    engine.runAndWait()
+
+
+def take_command():
+    try:
+        with sr.Microphone() as source:
+            print('listening...')
+            voice = listener.listen(source)
+            command = listener.recognize_google(voice)
+            command = command.lower()
+            if 'alexa' in command:
+                command = command.replace('alexa', '')
+                print(command)
+    except:
+        pass
+    return command
+
+def talk(text):
+    engine.say(text)
+    engine.runAndWait()
+
+
+def get_info():
+    try:
+        with sr.Microphone() as source:
+            print('listening...')
+            voice = listener.listen(source)
+            info = listener.recognize_google(voice)
+            print(info)
+            return info.lower()
+    except:
+        pass
+
+
+def send_email(receiver, subject, message):
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    # Make sure to give app access in your Google account
+    server.login('Sender_Email', 'Sender_Email_password')
+    email = EmailMessage()
+    email['From'] = 'Sender_Email'
+    email['To'] = receiver
+    email['Subject'] = subject
+    email.set_content(message)
+    server.send_message(email)
+
+
+email_list = {
+    'sangee': 'sangeethabalasundaram10gmail.com',
+    'sneha': 'sneha123@gmail.com',
+    'sai': 'saiklp@gmail.com',
+    'lisa': 'lisa486@gmail.com',
+    'indhu': 'indhujatb63@gmail.com'
+}
+
+
+def get_email_info():
+    talk('To Whom you want to send email')
+    name = get_info()
+    receiver = email_list[name]
+    print(receiver)
+    talk('What is the subject of your email?')
+    subject = get_info()
+    talk('Tell me the text in your email')
+    message = get_info()
+    send_email(receiver, subject, message)
+    talk('Hey lazy ass. Your email is sent')
+    talk('Do you want to send more email?')
+    send_more = get_info()
+    if 'yes' in send_more:
+        get_email_info()
+
+
+get_email_info()
+
+def run_alexa():
+    command = take_command()
+    print(command)
+    if 'play' in command:
+        song = command.replace('play', '')
+        talk('playing ' + song)
+        pywhatkit.playonyt(song)
+    elif 'time' in command:
+        time = datetime.datetime.now().strftime('%I:%M %p')
+        talk('Current time is ' + time)
+    elif 'who the heck is' in command:
+        person = command.replace('who the heck is', '')
+        info = wikipedia.summary(person, 1)
+        print(info)
+        talk(info)
+    elif 'date' in command:
+        talk('sorry, I have a headache')
+    elif 'are you single' in command:
+        talk('I am in a relationship with wifi')
+    elif 'joke' in command:
+        talk(pyjokes.get_joke())
+    else:
+        talk('Please say the command again.')
+
+
+while True:
+    run_alexa()
